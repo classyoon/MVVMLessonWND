@@ -60,11 +60,9 @@ struct SurvivorTrackerView : View {
                 }
                 .pickerStyle(.segmented)
                 ForEach(vm.people) { data in
-                    NavigationLink {
+                 
                         SurvivorEditView(data: data, update: vm.update)
-                    } label: {
-                        Text("name: \(data.name) - at \(data.location)")
-                    }
+                   
 
                     
                 }.onDelete(perform: vm.delete)
@@ -85,14 +83,22 @@ struct SurvivorEditView : View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        List {
+        VStack {
             TextField("Name", text: $name)
+                .onChange(of: name) { newValue, oldValue in
+                    data.name = newValue
+                    update(data)
+                }
             Picker("Location", selection: $selectedPlace) {
                 ForEach(Place.allCases){ place in
                     Text(place.rawValue)
                 }
             }
             .pickerStyle(.segmented)
+            .onChange(of: selectedPlace) { newValue, oldValue in
+                data.location = newValue
+                update(data)
+            }
         }.toolbar {
             Button("Update"){
                 update(SurvivorData(name: name, location: selectedPlace, id: data.id))
